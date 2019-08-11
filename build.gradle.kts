@@ -10,9 +10,7 @@ tasks.test {
     useJUnitPlatform {
         includeEngines("jqwik","jupiter")
     }
-    include("**/*Properties.class")
-    include("**/*Test.class")
-    include("**/*Tests.class")
+    include("de/gtrefs/pbtc/**/*.class")
 }
 
 dependencies {
