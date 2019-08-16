@@ -24,11 +24,11 @@ public class SingleDockerContainer {
         try(GenericContainer alpine = new GenericContainer()) {
             startsAndStops.run(alpine);
             List<Action<GenericContainer>> actions = startsAndStops.runActions();
-            if(actions.get(actions.size() -1) instanceof StopContainer){
+            if(actions.get(actions.size() -1).equals(DockerAction.stop())){
                 Statistics.collect("Container should be stopped");
                 assertThat(alpine.isRunning()).isEqualTo(false);
             }
-            if(actions.get(actions.size() -1) instanceof StartContainer){
+            if(actions.get(actions.size() -1).equals(DockerAction.start())){
                 Statistics.collect("Container should be started");
                 assertThat(alpine.isRunning()).isEqualTo(true);
             }
@@ -37,33 +37,31 @@ public class SingleDockerContainer {
 
     @Provide
     Arbitrary<ActionSequence<GenericContainer>> startAndStops(){
-        return Arbitraries.sequences(Arbitraries.of(new StartContainer(), new StopContainer()))
+        return Arbitraries.sequences(Arbitraries.of(DockerAction.start(), DockerAction.stop()))
                 .ofMinSize(3)
                 .ofMaxSize(10);
     }
 
     @Provide
     Arbitrary<ActionSequence<GenericContainer>> starts(){
-        return Arbitraries.sequences(Arbitraries.of(new StartContainer()))
+        return Arbitraries.sequences(Arbitraries.of(DockerAction.start()))
                 .ofMinSize(3)
                 .ofMaxSize(10);
     }
 
-    static class StopContainer implements Action<GenericContainer> {
-
-        @Override
-        public GenericContainer run(GenericContainer model) {
-            model.stop();
-            return model;
+    public interface DockerAction extends Action<GenericContainer> {
+        static DockerAction start() {
+            return container -> {
+                container.start();
+                return container;
+            };
         }
-    }
 
-    static class StartContainer implements Action<GenericContainer> {
-
-        @Override
-        public GenericContainer run(GenericContainer model) {
-            model.start();
-            return model;
+        static DockerAction stop() {
+            return container -> {
+                container.stop();
+                return container;
+            };
         }
     }
 }
