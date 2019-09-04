@@ -1,0 +1,61 @@
+# TODO
+## Release 0.1.0
+* Randomly generated test plans
+* Load runner
+* Research and define vocabulary
+* How should faults be injected
+* Example application
+
+# Backlog
+
+* Seperate API from iplementation
+* Randomly generated testplans
+* Load runner
+* Research and define vocabulary
+  * Faults, Testplans, Actions, State etc.
+
+* What kind of faults should be injected?
+  * Stop, latency, data corruption
+  
+* How should faults be injected?
+  * Fake HTTP servers, Toxiproxy, linux kernel, own proxy
+
+* How to describe the system under test?
+  * DSL?
+    ```java
+    class LandscapeTest {
+        public void setup(){
+            system()
+                .with()
+                    .link()
+                    .between(kafka)
+                    .and(app)
+                .and()
+                    .link()
+                    .between(app)
+                    .and(endpoint)
+                    .asHttp();
+        }
+    }
+    ```
+    ```Kotlin
+        class LandscapeTest {
+            fun setup(){
+                system {
+                  link { kafka and app }
+                  link { app and endpoint } using http
+                }
+            }
+        }
+    ```
+  * Docker compose?
+  * Kubernetes, deployment.yml? 
+  * Helm charts?  
+* Research resilience testing in Spring and compare
+  * What is the benefit of using this approach?
+
+* How to cope with state of system before and after tests?
+  * Reuse running instances? Reset?
+  * Parallelizabilization?
+  * Kubernetes support to ramp up systems under test?
+    * One per test plan?
